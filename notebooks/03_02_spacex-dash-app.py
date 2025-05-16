@@ -1,4 +1,4 @@
-# Import required libraries
+    # Import required libraries
 import pandas as pd
 import dash
 from dash import html
@@ -43,8 +43,8 @@ app.layout = html.Div(children=[html.H1('SpaceX Launch Records Dashboard',
 
                                 html.P("Payload range (Kg):"),
                                 # TASK 3: Add a slider to select payload range
-                                dcc.RangeSlider(id='payload-slider', 
-                                                mi=0,
+                                dcc.RangeSlider(id='payload-slider',
+                                                min=0,
                                                 max=10000,
                                                 step=1000,
                                                 marks={a: str(a) for a in range(0, 11000, 1000)},
@@ -101,8 +101,10 @@ def get_pie_chart(entered_site):
 )
 def get_scatter_plot(entered_site, entered_payload):
 
+    low, high = entered_payload
+    
     if entered_site == 'ALL':
-        filtered_df = spacex_df
+        filtered_df = spacex_df[(spacex_df['Payload Mass (kg)'] >= low) & (spacex_df['Payload Mass (kg)'] <=  high)]
         fig = px.scatter(filtered_df,
                          x="Payload Mass (kg)",
                          y='class',
@@ -110,7 +112,9 @@ def get_scatter_plot(entered_site, entered_payload):
                          title="Outcomes for all spacex sites")
         pass
     else:
-        filtered_df = spacex_df[spacex_df['Launch Site'] == entered_site]
+        filtered_df = spacex_df[(spacex_df['Launch Site'] == entered_site) &
+                                (spacex_df['Payload Mass (kg)'] >= low) &
+                                (spacex_df['Payload Mass (kg)'] <=  high)]
         fig = px.scatter(filtered_df,
                          x="Payload Mass (kg)",
                          y='class',
